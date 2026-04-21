@@ -1,18 +1,47 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { UsersModule } from './users/users.module';
-import { AuthModule } from './auth/auth.module';
-import { RoomsModule } from './rooms/rooms.module';
-import { BookingsModule } from './bookings/bookings.module';
-import { PricingModule } from './pricing/pricing.module';
-import { SearchLogsModule } from './search-logs/search-logs.module';
-import { ReportsModule } from './reports/reports.module';
-import { SupportModule } from './support/support.module';
+import { ConfigModule } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
+
+import { AuthModule } from './modules/auth/auth.module';
+import { UsersModule } from './modules/users/users.module';
+import { HotelsModule } from './modules/hotels/hotels.module';
+import { RoomsModule } from './modules/rooms/rooms.module';
+import { BookingsModule } from './modules/bookings/bookings.module';
+import { PricingModule } from './modules/pricing/pricing.module';
+import { AnalyticsModule } from './modules/analytics/analytics.module';
 
 @Module({
-  imports: [UsersModule, AuthModule, RoomsModule, BookingsModule, PricingModule, SearchLogsModule, ReportsModule, SupportModule],
-  controllers: [AppController],
-  providers: [AppService],
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: '.env',
+    }),
+
+    TypeOrmModule.forRoot({
+      type: 'mssql',
+      host: process.env.DB_HOST || 'localhost',
+      port: parseInt(process.env.DB_PORT || '1433'),
+      username: process.env.DB_USER || 'sa',
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_NAME || 'hotel_management',
+
+      entities: ['dist/**/*.entity.js'],
+
+      synchronize: true,
+
+      options: {
+        encrypt: false,
+        trustServerCertificate: true,
+      },
+    }),
+
+    AuthModule,
+    UsersModule,
+    HotelsModule,
+    RoomsModule,
+    BookingsModule,
+    PricingModule,
+    AnalyticsModule,
+  ],
 })
 export class AppModule {}
