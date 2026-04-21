@@ -1,0 +1,13 @@
+{
+  "name": "global-hotel-reservation-engine",
+  "private": true,
+  "workspaces": ["frontend", "backend", "shared"],
+  "scripts": {
+    "dev": "concurrently \"npm run start:dev -w backend\" \"npm run dev -w frontend\"",
+    "dev:be": "npm run start:dev -w backend",
+    "dev:fe": "npm run dev -w frontend"
+  },
+  "devDependencies": {
+    "concurrently": "^8.0.0"
+  }
+}
